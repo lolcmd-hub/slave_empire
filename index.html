@@ -5,20 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Пользовательское соглашение</title>
     <style>
-        body { font-family: "Times New Roman", Times, serif; background-color: #f4efe9; color: #1a1a1a; padding: 20px; display: flex; justify-content: center; }
-        .box { background: #ffffff; padding: 40px; border: 1px solid #d1cabe; max-width: 650px; width: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        h1 { font-family: Arial, sans-serif; color: #2c3e50; font-size: 24px; text-align: center; border-bottom: 2px solid #eae5dc; padding-bottom: 15px; margin-bottom: 20px;}
+        /* Фон под старую бумагу */
+        body { font-family: "Georgia", "Times New Roman", serif; background-color: #eaddc5; color: #2e251b; padding: 20px; display: flex; justify-content: center; }
         
-        .terms-content { background: #faf8f5; padding: 25px; height: 350px; overflow-y: auto; margin-bottom: 25px; font-size: 15px; line-height: 1.6; border: 1px solid #eae5dc; text-align: justify; }
-        .terms-content h2 { font-family: Arial, sans-serif; font-size: 16px; margin-top: 20px; margin-bottom: 8px; color: #2c3e50; }
+        /* Основной блок (светлый пергамент) */
+        .box { background: #f5ebd9; padding: 40px; border: 1px solid #c7b7a3; max-width: 650px; width: 100%; box-shadow: 0 5px 20px rgba(0,0,0,0.1); border-radius: 4px; }
+        
+        /* Заголовок */
+        h1 { font-family: Arial, sans-serif; color: #3e2723; font-size: 24px; text-align: center; border-bottom: 2px solid #d1bfae; padding-bottom: 15px; margin-bottom: 20px; font-weight: 700; }
+        
+        /* Блок с текстом (чуть темнее для контраста, шрифт крупнее и жирнее) */
+        .terms-content { background: #efe3ce; padding: 25px; height: 350px; overflow-y: auto; margin-bottom: 25px; font-size: 16px; line-height: 1.6; border: 1px solid #d1bfae; text-align: justify; font-weight: 500; border-radius: 4px; }
+        .terms-content h2 { font-family: Arial, sans-serif; font-size: 17px; margin-top: 20px; margin-bottom: 8px; color: #3e2723; font-weight: 700; }
         .terms-content p { margin-top: 0; margin-bottom: 12px; }
+        .terms-content b { font-weight: 700; }
         
-        .checkbox-container { font-family: Arial, sans-serif; margin-bottom: 25px; font-size: 14px; display: flex; align-items: flex-start; gap: 10px; cursor: pointer; color: #333; }
-        .checkbox-container input { width: 18px; height: 18px; cursor: pointer; margin-top: 2px; }
+        /* Стилизация скроллбара под документ */
+        .terms-content::-webkit-scrollbar { width: 8px; }
+        .terms-content::-webkit-scrollbar-track { background: #efe3ce; border-radius: 4px; }
+        .terms-content::-webkit-scrollbar-thumb { background: #c7b7a3; border-radius: 4px; }
+        .terms-content::-webkit-scrollbar-thumb:hover { background: #a69580; }
         
-        .btn { display: block; width: 100%; box-sizing: border-box; text-align: center; background: #2c3e50; color: white; padding: 15px; text-decoration: none; font-family: Arial, sans-serif; font-weight: bold; border: none; font-size: 16px; cursor: pointer; transition: 0.2s; }
-        .btn:disabled { background: #c2c6ca; color: #6e767d; cursor: not-allowed; }
-        .btn:not(:disabled):hover { background: #1a252f; }
+        /* Чекбокс */
+        .checkbox-container { font-family: Arial, sans-serif; margin-bottom: 25px; font-size: 15px; display: flex; align-items: flex-start; gap: 10px; cursor: pointer; color: #2e251b; font-weight: bold; }
+        .checkbox-container input { width: 20px; height: 20px; cursor: pointer; margin-top: 1px; }
+        
+        /* Кнопка */
+        .btn { display: block; width: 100%; box-sizing: border-box; text-align: center; background: #3e2723; color: #f5ebd9; padding: 15px; text-decoration: none; font-family: Arial, sans-serif; font-weight: bold; border: none; font-size: 17px; cursor: pointer; transition: 0.2s; border-radius: 4px; }
+        .btn:disabled { background: #b0a597; color: #eaddc5; cursor: not-allowed; }
+        .btn:not(:disabled):hover { background: #261612; }
     </style>
 </head>
 <body>
