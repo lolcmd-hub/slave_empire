@@ -109,6 +109,14 @@
             try {
                 const deviceHash = await generateDeviceHash();
                 window.location.href = `https://t.me/${botUsername}?start=agree_${deviceHash}`;
+                
+                // === ВОТ ТУТ ИСПРАВЛЕНИЕ ===
+                // Через 3 секунды возвращаем кнопку в нормальное состояние, чтобы она не висела
+                setTimeout(() => {
+                    acceptBtn.innerText = "Принять условия и продолжить";
+                    acceptBtn.disabled = false;
+                }, 3000);
+
             } catch (e) {
                 alert("Ошибка подтверждения. Пожалуйста, отключите блокировщик рекламы или смените браузер.");
                 acceptBtn.innerText = "Принять условия и продолжить";
