@@ -5,24 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Пользовательское соглашение</title>
     <style>
+        /* Фон под старую бумагу */
         body { font-family: "Georgia", "Times New Roman", serif; background-color: #eaddc5; color: #2e251b; padding: 20px; display: flex; justify-content: center; }
-        .box { background: #f5ebd9; padding: 40px; border: 1px solid #c7b7a3; max-width: 650px; width: 100%; box-shadow: 0 5px 20px rgba(0,0,0,0.1); border-radius: 4px; }
+        
+        /* Основной блок (светлый пергамент) */
+        .box { background: #f5ebd9; padding: 40px; border: 1px solid #c7b7a3; max-width: 650px; width: 100%; box-shadow: 0 5px 20px rgba(0,0,0,0.1); border-radius: 4px; box-sizing: border-box; }
+        
+        /* Заголовок */
         h1 { font-family: Arial, sans-serif; color: #3e2723; font-size: 24px; text-align: center; border-bottom: 2px solid #d1bfae; padding-bottom: 15px; margin-bottom: 20px; font-weight: 700; }
+        
+        /* Блок с текстом */
         .terms-content { background: #efe3ce; padding: 25px; height: 350px; overflow-y: auto; margin-bottom: 25px; font-size: 16px; line-height: 1.6; border: 1px solid #d1bfae; text-align: justify; font-weight: 500; border-radius: 4px; }
         .terms-content h2 { font-family: Arial, sans-serif; font-size: 17px; margin-top: 20px; margin-bottom: 8px; color: #3e2723; font-weight: 700; }
         .terms-content p { margin-top: 0; margin-bottom: 12px; }
         .terms-content b { font-weight: 700; }
+        
+        /* Стилизация скроллбара под документ */
         .terms-content::-webkit-scrollbar { width: 8px; }
         .terms-content::-webkit-scrollbar-track { background: #efe3ce; border-radius: 4px; }
         .terms-content::-webkit-scrollbar-thumb { background: #c7b7a3; border-radius: 4px; }
         .terms-content::-webkit-scrollbar-thumb:hover { background: #a69580; }
+        
+        /* Чекбокс */
         .checkbox-container { font-family: Arial, sans-serif; margin-bottom: 25px; font-size: 15px; display: flex; align-items: flex-start; gap: 10px; cursor: pointer; color: #2e251b; font-weight: bold; }
-        .checkbox-container input { width: 20px; height: 20px; cursor: pointer; margin-top: 1px; }
+        .checkbox-container input { width: 20px; height: 20px; cursor: pointer; margin-top: 1px; flex-shrink: 0; }
+        
+        /* Кнопка */
         .btn { display: block; width: 100%; box-sizing: border-box; text-align: center; background: #3e2723; color: #f5ebd9; padding: 15px; text-decoration: none; font-family: Arial, sans-serif; font-weight: bold; border: none; font-size: 17px; cursor: pointer; transition: 0.2s; border-radius: 4px; }
         .btn:disabled { background: #b0a597; color: #eaddc5; cursor: not-allowed; }
         .btn:not(:disabled):hover { background: #261612; }
-        .fallback-box { margin-top: 15px; text-align: center; font-size: 14px; font-family: Arial, sans-serif; display: none; }
-        .fallback-box a { color: #3e2723; font-weight: bold; }
+
+        /* Резервный блок перехода */
+        .fallback-box { margin-top: 18px; padding: 12px; background: #efe3ce; border: 1px dashed #a69580; border-radius: 4px; text-align: center; font-size: 14px; font-family: Arial, sans-serif; display: none; line-height: 1.5; }
+        .fallback-box a { color: #3e2723; font-weight: bold; text-decoration: underline; }
+        .cmd-code { display: inline-block; margin-top: 6px; padding: 6px 10px; background: #eaddc5; border: 1px solid #c7b7a3; border-radius: 4px; font-family: monospace; font-size: 13px; user-select: all; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -60,72 +76,116 @@
         </div>
 
         <label class="checkbox-container">
-            <input type="checkbox" id="agree-checkbox">
+            <input type="checkbox" id="agree-checkbox" onchange="document.getElementById('accept-btn').disabled = !this.checked">
             <span>Я внимательно прочитал(а) текст Соглашения и даю согласие на привязку устройства в соответствии с п. 2.1.</span>
         </label>
         
         <button id="accept-btn" class="btn" disabled>Принять условия и продолжить</button>
-        
+
         <div class="fallback-box" id="fallback-box">
-            Если бот не открылся автоматически, <a href="#" id="fallback-link">нажмите сюда для перехода</a>.
+            Если Telegram не открылся автоматически, <a href="#" id="fallback-link">нажмите сюда для перехода в бота</a><br>
+            или отправьте боту эту команду:<br>
+            <span class="cmd-code" id="fallback-cmd" onclick="copyCmd()"></span>
         </div>
     </div>
 
     <script>
-        const botUsername = "slave_imperial_bot"; 
+        const botUsername = "slave_imperial_bot";
         
         const checkbox = document.getElementById('agree-checkbox');
         const acceptBtn = document.getElementById('accept-btn');
         const fallbackBox = document.getElementById('fallback-box');
         const fallbackLink = document.getElementById('fallback-link');
+        const fallbackCmd = document.getElementById('fallback-cmd');
 
-        checkbox.addEventListener('change', (e) => {
+        // Синхронизируем состояние кнопки сразу (на случай перезагрузки страницы с отмеченной галочкой)
+        acceptBtn.disabled = !checkbox.checked;
+        checkbox.addEventListener('change', function(e) {
             acceptBtn.disabled = !e.target.checked;
         });
 
-        async function generateDeviceHash() {
-            const components = [
-                navigator.userAgent, navigator.language, screen.colorDepth,
-                screen.width + 'x' + screen.height, Intl.DateTimeFormat().resolvedOptions().timeZone,
-                navigator.hardwareConcurrency || 'unknown', navigator.deviceMemory || 'unknown', navigator.platform
+        function getRawComponents() {
+            const tz = (window.Intl && Intl.DateTimeFormat) ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'unknown';
+            return [
+                navigator.userAgent || '',
+                navigator.language || '',
+                screen.colorDepth || '',
+                screen.width + 'x' + screen.height,
+                tz,
+                navigator.hardwareConcurrency || 'unknown',
+                navigator.deviceMemory || 'unknown',
+                navigator.platform || ''
             ].join('|||');
-
-            const encoder = new TextEncoder();
-            const dataBuffer = encoder.encode(components);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 16);
         }
 
-        acceptBtn.addEventListener('click', async () => {
-            acceptBtn.innerText = "Подтверждение...";
-            acceptBtn.disabled = true;
-            try {
-                const deviceHash = await generateDeviceHash();
-                const targetUrl = `https://t.me/${botUsername}?start=agree_${deviceHash}`;
-                const tgProtocolUrl = `tg://resolve?domain=${botUsername}&start=agree_${deviceHash}`;
-                
-                fallbackLink.href = targetUrl;
-                fallbackBox.style.display = "block";
-
-                // Пробуем открыть через tg:// протокол (мгновенно возвращает в бот)
-                window.location.href = tgProtocolUrl;
-                
-                // На всякий случай дублируем стандартным редиректом через 400мс
-                setTimeout(() => {
-                    window.location.href = targetUrl;
-                }, 400);
-
-                setTimeout(() => {
-                    acceptBtn.innerText = "Принять условия и продолжить";
-                    acceptBtn.disabled = false;
-                }, 3000);
-
-            } else (e) {
-                alert("Ошибка подтверждения. Пожалуйста, отключите блокировщик рекламы или смените браузер.");
-                acceptBtn.innerText = "Принять условия и продолжить";
-                acceptBtn.disabled = false;
+        // Резервный синхронный генератор 16-символьного хэша (если в браузере нет crypto.subtle)
+        function fallbackSyncHash(str) {
+            let h1 = 0xdeadbeef ^ str.length;
+            let h2 = 0x41c6ce57 ^ str.length;
+            for (let i = 0, ch; i < str.length; i++) {
+                ch = str.charCodeAt(i);
+                h1 = Math.imul(h1 ^ ch, 2654435761);
+                h2 = Math.imul(h2 ^ ch, 1597334677);
             }
+            h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+            h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+            const hex1 = (h1 >>> 0).toString(16).padStart(8, '0');
+            const hex2 = (h2 >>> 0).toString(16).padStart(8, '0');
+            return (hex1 + hex2).substring(0, 16);
+        }
+
+        let cachedDeviceHash = fallbackSyncHash(getRawComponents());
+
+        // Заранее вычисляем SHA-256 при загрузке страницы, чтобы клик по кнопке срабатывал мгновенно
+        (async function precomputeHash() {
+            try {
+                if (window.crypto && window.crypto.subtle && window.TextEncoder) {
+                    const encoder = new TextEncoder();
+                    const dataBuffer = encoder.encode(getRawComponents());
+                    const hashBuffer = await window.crypto.subtle.digest('SHA-256', dataBuffer);
+                    const hashArray = Array.from(new Uint8Array(hashBuffer));
+                    cachedDeviceHash = hashArray.map(function(b) {
+                        return b.toString(16).padStart(2, '0');
+                    }).join('').substring(0, 16);
+                }
+            } catch (err) {
+                // Остается надежный синхронный cachedDeviceHash
+            }
+        })();
+
+        function copyCmd() {
+            const text = fallbackCmd.innerText;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text);
+                alert("Команда скопирована! Отправьте её в чат с ботом.");
+            }
+        }
+
+        acceptBtn.addEventListener('click', function() {
+            const deviceHash = cachedDeviceHash;
+            const webUrl = "https://t.me/" + botUsername + "?start=agree_" + deviceHash;
+            const tgAppUrl = "tg://resolve?domain=" + botUsername + "&start=agree_" + deviceHash;
+
+            acceptBtn.innerText = "Переход в Telegram...";
+            acceptBtn.disabled = true;
+
+            fallbackLink.href = webUrl;
+            fallbackCmd.innerText = "/start agree_" + deviceHash;
+            fallbackBox.style.display = "block";
+
+            // Пытаемся сразу открыть приложение Telegram напрямую
+            window.location.href = tgAppUrl;
+
+            // Через 500 мс дублируем обычной ссылкой t.me
+            setTimeout(function() {
+                window.location.href = webUrl;
+            }, 500);
+
+            // Возвращаем кнопку в активное состояние через 2.5 секунды
+            setTimeout(function() {
+                acceptBtn.innerText = "Принять условия и продолжить";
+                acceptBtn.disabled = !checkbox.checked;
+            }, 2500);
         });
     </script>
 </body>
